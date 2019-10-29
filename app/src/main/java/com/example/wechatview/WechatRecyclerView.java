@@ -12,9 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-
-
 public class WechatRecyclerView extends RecyclerView {
     private float lastY;
     private View headView, ball1, ball2, ball3, layout_behand, layout_ball, bglayout, layout_title;
@@ -24,17 +21,19 @@ public class WechatRecyclerView extends RecyclerView {
 
     private int HEIGHT_INITIAL; //标题栏高度，也是header的初始高度
     private int HEIGHT_SHOWBALL_END; //小球动画结束高度
-    private int HEIGHT_SHOWBALL_BEGIN = 40; //小球动画出现时距顶部高度
-    private int BALLMAXDISTANCE=60; //小球之间的最大间隔
     private int BALLMAXRADIUS; //小球最大半径
     private int BALLMIDRADIUS; //小球动画结束时半径
     private int MAXHEIGHT;  //header布局完全落下的高度
     private int TOTALDISTANCE; //标题栏距离顶部最大高度
-    private int MAXDISTANCE_ALPHACHANGE=2000; //头部view放缩过程中头部高度变化的最大值
 
-    private int STATUS_NORMARL = 1;//header非落下状态
-    private int STATUS_DOWN = 2; //header落下状态
-    private int status = STATUS_NORMARL; //header状态
+    private final int HEIGHT_SHOWBALL_BEGIN = 40; //小球动画出现时距顶部高度
+    private final int BALLMAXDISTANCE=60; //小球之间的最大间隔
+    private final int MAXDISTANCE_ALPHACHANGE=2000; //头部view放缩过程中头部高度变化的最大值
+    private final float DUMP=1.5f; //阻尼系数
+
+    private  int STATUS_NORMARL = 1;//header非落下状态
+    private  int STATUS_DOWN = 2; //header落下状态
+    private  int status = STATUS_NORMARL; //header状态
 
     public WechatRecyclerView(@NonNull Context context) {
         super(context);
@@ -81,25 +80,26 @@ public class WechatRecyclerView extends RecyclerView {
         float dy = e.getRawY();
         switch (e.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
-                if (status == STATUS_DOWN) {
+                if (status == STATUS_DOWN) { //header落下状态
                     if (getChildAt(0).getTop() < 0) {  //判断在布局落下状态后是否又进行了滑动
                         isDrag = true;
                     }
                     setBalllayoutHeight(TOTALDISTANCE + (float) (getChildAt(0).getTop()));
                     return super.onTouchEvent(e);
                 }
+                //header非落下状态
                 if (!canScroll()) {
                     if (lastY == 0) {
                         lastY = dy;
                         return true;
                     } else {
-                        if (dy - lastY > 0) {
+                        if (dy - lastY > 0) { //下拉
                             if (headView.getHeight() < Util.getScreenHeight(getContext())) {
-                                setHeaderHeightBy((int) ((dy - lastY) / 1.5));
+                                setHeaderHeightBy((int) ((dy - lastY) / DUMP)); //下拉过程添加一个阻尼效果
                                 lastY = dy;
                             }
                             return true;
-                        } else {
+                        } else {   //上拉
                             if (headView.getHeight() >= HEIGHT_INITIAL) {
                                 setHeaderHeightBy((int) (dy - lastY));
                                 lastY = dy;
@@ -111,13 +111,13 @@ public class WechatRecyclerView extends RecyclerView {
                 break;
             case MotionEvent.ACTION_UP:
                 lastY = 0;
-                if (status == STATUS_NORMARL) {
+                if (status == STATUS_NORMARL) { //header非落下状态
                     if (headView.getHeight() < HEIGHT_SHOWBALL_END + HEIGHT_INITIAL) {
                         excuteAnnimation(headView.getHeight(), HEIGHT_INITIAL, false);
                     } else {
                         excuteAnnimation(headView.getHeight(), MAXHEIGHT, true);
                     }
-                } else if (status == STATUS_DOWN) {
+                } else if (status == STATUS_DOWN) {  //header落下状态
                     if (findViewHolderForAdapterPosition(1) != null) { //position为1的位置可见时，即title不在最下部，弹回顶部
                         //  findViewHolderForAdapterPosition(1).itemView.getLocationOnScreen(location);
                         int distance = TOTALDISTANCE + getChildAt(0).getTop();
@@ -198,12 +198,13 @@ public class WechatRecyclerView extends RecyclerView {
                 scrollBy(0, lastValue - value);
                 bglayout.setAlpha(getValue(bglayout.getAlpha(), 0, 1 - (float) value / distance));
                 if ((float) value / TOTALDISTANCE > 0.7) {
-                    layout_title.setBackgroundColor((Integer) Util.evaluate(1 - (float) ((value - TOTALDISTANCE * 0.7) / (0.3 * TOTALDISTANCE)), 0xff5C5772, 0xff777582));
+                    layout_title.setBackgroundColor((Integer) Util.evaluate(1 - (float) ((value - TOTALDISTANCE * 0.7) / (0.3 * TOTALDISTANCE)),
+                            0xff5C5772, 0xff777582));
                 } else {
                     layout_title.setBackgroundColor(Color.parseColor("#00000000"));
                 }
-                layout_title.setAlpha(getValue(0.5f, 1, 1 - (float) (value - HEIGHT_SHOWBALL_END) / (TOTALDISTANCE - HEIGHT_SHOWBALL_END)));
-
+                layout_title.setAlpha(getValue(0.5f, 1,
+                        1 - (float) (value - HEIGHT_SHOWBALL_END) / (TOTALDISTANCE - HEIGHT_SHOWBALL_END)));
                 lastValue = value;
             }
         });
@@ -305,10 +306,12 @@ public class WechatRecyclerView extends RecyclerView {
             layout_behand.setScaleY((float) (0.7 + (distance < MAXDISTANCE_ALPHACHANGE ? distance / MAXDISTANCE_ALPHACHANGE * 0.3 : 0.3)));
         }
         //标题栏背景透明度变化
-        layout_title.setAlpha(getValue(1, 0.5f, (distance - HEIGHT_SHOWBALL_END) / (TOTALDISTANCE - HEIGHT_SHOWBALL_END)));
+        layout_title.setAlpha(getValue(1, 0.5f,
+                (distance - HEIGHT_SHOWBALL_END) / (TOTALDISTANCE - HEIGHT_SHOWBALL_END)));
         //标题栏背景颜色变化
         if (distance / TOTALDISTANCE > 0.7) {
-            layout_title.setBackgroundColor((Integer) Util.evaluate((float) ((distance - TOTALDISTANCE * 0.7) / (0.3 * TOTALDISTANCE)), 0xff777582, 0xff5C5772));
+            layout_title.setBackgroundColor((Integer) Util.evaluate((float) ((distance - TOTALDISTANCE * 0.7) / (0.3 * TOTALDISTANCE)),
+                    0xff777582, 0xff5C5772));
         } else {
             layout_title.setBackgroundColor(Color.parseColor("#00000000"));
         }
@@ -351,7 +354,8 @@ public class WechatRecyclerView extends RecyclerView {
      */
     public void setHeaderHeightBy(int dy) {
         ViewGroup.LayoutParams layoutParams = headView.getLayoutParams();
-        layoutParams.height = layoutParams.height + dy > Util.getScreenHeight(getContext()) ? Util.getScreenHeight(getContext()) : layoutParams.height + dy;
+        layoutParams.height = layoutParams.height + dy > Util.getScreenHeight(getContext()) ?
+                Util.getScreenHeight(getContext()) : layoutParams.height + dy;
         headView.setLayoutParams(layoutParams);
         post(new Runnable() {
             @Override

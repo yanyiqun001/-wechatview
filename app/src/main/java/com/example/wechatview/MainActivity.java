@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView rvinside;
     private List<Entity> entities = new ArrayList<>();
     private List<Entity> entities2 = new ArrayList<>();
-    private MyAdapter myAdapter;
+    private MyAdapter mAdapter;
     private LinearLayout mLayoutTitle;
 
     @Override
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < 100; i++) {
             entities.add(new Entity());
         }
-        myAdapter = new MyAdapter(entities);
-        mRv.setAdapter(myAdapter);
+        mAdapter = new MyAdapter(entities);
+        mRv.setAdapter(mAdapter);
         View view = LayoutInflater.from(this).inflate(R.layout.headview, null);
-        myAdapter.addHeaderView(view);
+        mAdapter.addHeaderView(view);
         mRv.setHeadView(view);
         mRv.setMoveListener(new WechatRecyclerView.MoveCallback() {
             @Override
