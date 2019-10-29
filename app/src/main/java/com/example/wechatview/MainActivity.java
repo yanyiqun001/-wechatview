@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private MyRecyclerView mRv;
+    private WechatRecyclerView mRv;
     private RecyclerView rvinside;
     private List<Entity> entities = new ArrayList<>();
     private List<Entity> entities2 = new ArrayList<>();
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
 
-        mRv = (MyRecyclerView) findViewById(R.id.rv);
+        mRv = (WechatRecyclerView) findViewById(R.id.rv);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRv.setLayoutManager(linearLayoutManager);
         for (int i = 0; i < 100; i++) {
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         View view = LayoutInflater.from(this).inflate(R.layout.headview, null);
         myAdapter.addHeaderView(view);
         mRv.setHeadView(view);
-        mRv.setMoveListener(new MyRecyclerView.MoveCallback() {
+        mRv.setMoveListener(new WechatRecyclerView.MoveCallback() {
             @Override
             public void onMove(boolean isMove) {
                 if (isMove) {

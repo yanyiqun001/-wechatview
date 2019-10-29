@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 
 
-public class MyRecyclerView extends RecyclerView {
+public class WechatRecyclerView extends RecyclerView {
     private float lastY;
     private View headView, ball1, ball2, ball3, layout_behand, layout_ball, bglayout, layout_title;
     private boolean isDrag; //头部布局落下以后 是否又进行过滑动
@@ -36,17 +36,17 @@ public class MyRecyclerView extends RecyclerView {
     private int STATUS_DOWN = 2; //header落下状态
     private int status = STATUS_NORMARL; //header状态
 
-    public MyRecyclerView(@NonNull Context context) {
+    public WechatRecyclerView(@NonNull Context context) {
         super(context);
         init();
     }
 
-    public MyRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public WechatRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public MyRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public WechatRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }

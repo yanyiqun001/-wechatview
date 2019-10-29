@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.example.wechatview.MyRecyclerView
+    <com.example.wechatview.WechatRecyclerView
         android:overScrollMode="never"
         android:id="@+id/rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.example.wechatview.MyRecyclerView>
+    </com.example.wechatview.WechatRecyclerView>
     <LinearLayout
         android:visibility="visible"
         android:id="@+id/layout_title"
